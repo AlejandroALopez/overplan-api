@@ -1,6 +1,7 @@
 import {
   Controller,
   Param,
+  Query,
   Get,
   Body,
   Post,
@@ -19,9 +20,19 @@ export class TaskController {
     return this.taskService.create(task);
   }
 
+  // GET /tasks - Retrieve all tasks filtered by planId and week if provided
   @Get()
-  async findAll(): Promise<TaskModel[]> {
-    return (await this.taskService.findAll()).reverse();
+  async findAll(
+    @Query('planId') planId?: string,
+    @Query('week') week?: number,
+  ): Promise<TaskModel[]> {
+    if (planId && week) {
+      return await this.taskService.findByPlanIdAndWeek(planId, week);
+    } else if (planId) {
+      return await this.taskService.findByPlanId(planId);
+    } else {
+      return await this.taskService.findAll();
+    }
   }
 
   @Get(':id')

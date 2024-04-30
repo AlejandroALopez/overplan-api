@@ -20,6 +20,14 @@ export class TaskService {
     return this.taskModel.findById(id).exec();
   }
 
+  async findByPlanIdAndWeek(planId: string, week: number): Promise<Task[]> {
+    return this.taskModel.find({ planId: planId, week: week }).exec();
+  }
+
+  async findByPlanId(planId: string): Promise<Task[]> {
+    return this.taskModel.find({ planId: planId }).exec();
+  }
+
   async update(id: string, task: Task): Promise<Task> {
     return this.taskModel.findByIdAndUpdate(id, task, { new: true }).exec();
   }
