@@ -3,7 +3,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type TaskDocument = HydratedDocument<Task>;
 
-const statusValues = ['backlog', 'active', 'in progress', 'completed'];
+const statusValues = ['Backlog', 'Active', 'In Progress', 'Completed'];
 
 @Schema()
 export class Task {

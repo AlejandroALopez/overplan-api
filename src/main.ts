@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const corsOptions: CorsOptions = {
-    origin: 'http://localhost:8080', // for local testing
+    origin: 'http://localhost:3000', // for local testing
     // origin: 'PROD URL'
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,

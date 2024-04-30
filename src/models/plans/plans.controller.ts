@@ -12,7 +12,7 @@ import { PlanService } from './plans.service';
 
 import { Plan as PlanModel } from './schemas/plan.schema';
 
-@Controller('tasks')
+@Controller('plans')
 export class PlanController {
   constructor(private readonly planService: PlanService) {}
 
