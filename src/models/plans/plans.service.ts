@@ -16,6 +16,14 @@ export class PlanService {
 
   async create(plan: Plan): Promise<Plan> {
     const createdPlan = new this.planModel(plan);
+
+    // TODO:
+    // 1. Call ChatGPT API with some parameters from plan (goal, numWeeks)
+    // 2. Retrieve JSON array of tasks
+    // 3. Loop through it, creating tasks (from plan, pass in: planId)
+    // 4. Tasks were created (saved?), finish by saving plan
+
+    // Note: Only save on success
     return createdPlan.save();
   }
 
