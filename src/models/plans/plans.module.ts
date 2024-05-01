@@ -4,9 +4,11 @@ import { PlanService } from './plans.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Plan, PlanSchema } from './schemas/plan.schema';
 import { Task, TaskSchema } from '../tasks/schemas/task.schema';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
+    HttpModule,
     MongooseModule.forFeature([{ name: Plan.name, schema: PlanSchema }]),
     MongooseModule.forFeature([{ name: Task.name, schema: TaskSchema }]),
   ],

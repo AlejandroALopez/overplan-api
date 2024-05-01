@@ -18,7 +18,7 @@ export class PlanController {
 
   @Post()
   create(@Body() plan: PlanModel): Promise<PlanModel> {
-    return this.planService.create(plan);
+    return this.planService.createWithGeneratedTasks(plan);
   }
 
   // GET /plans - Retrieve all plans filtered by userId

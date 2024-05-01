@@ -6,10 +6,10 @@ import { SYSTEM_PROMPT, FUNCTIONS } from './chatgpt.constants';
 
 @Injectable()
 export class ChatGPTService {
-  private openAiService: OpenAI;
+  private chatgptService: OpenAI;
 
   constructor(private configService: ConfigService) {
-    this.openAiService = new OpenAI({
+    this.chatgptService = new OpenAI({
       apiKey: this.configService.get('OPENAI_API_KEY'),
     });
   }
@@ -18,7 +18,7 @@ export class ChatGPTService {
   async getPlanData(request: IPlanRequest): Promise<OpenAI.ChatCompletion> {
     const userPrompt = `Goal: ${request.goal}\nMax weeks: ${request.numWeeks}`;
 
-    return this.openAiService.chat.completions.create({
+    return this.chatgptService.chat.completions.create({
       model: this.configService.get('OPENAI_API_MODEL'),
       response_format: { type: 'json_object' },
       messages: [
@@ -37,7 +37,7 @@ export class ChatGPTService {
       JSON.parse(message.choices[0].message.function_call.arguments);
     return {
       success: true,
-      result: resultJSON,
+      result: resultJSON.tasks,
     };
   }
 }

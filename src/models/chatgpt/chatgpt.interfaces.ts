@@ -1,4 +1,8 @@
-import OpenAI from 'openai';
+export interface ITask {
+  title: string;
+  description: string;
+  week: number;
+}
 
 export interface IPlanRequest {
   goal: string;
@@ -7,5 +11,5 @@ export interface IPlanRequest {
 
 export interface IPlanResponse {
   success: boolean;
-  result: OpenAI.ChatCompletion.Choice;
+  result: ITask[];
 }
