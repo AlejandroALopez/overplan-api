@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IPlanRequest, IPlanResponse } from './chatgpt.interfaces';
 import OpenAI from 'openai';
-import { SYSTEM_PROMPT, FUNCTIONS } from './chatgpt.constants';
+import { SYSTEM_PROMPT, FUNCTIONS, MAX_TOKENS } from './chatgpt.constants';
 
 @Injectable()
 export class ChatGPTService {
@@ -27,7 +27,7 @@ export class ChatGPTService {
       ],
       functions: FUNCTIONS,
       function_call: 'auto',
-      max_tokens: 1000,
+      max_tokens: MAX_TOKENS,
     });
   }
 

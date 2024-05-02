@@ -1,5 +1,7 @@
-export const SYSTEM_PROMPT =
+export const SYSTEM_PROMPT: string =
   'You are a plan builder that creates a list of tasks for a given goal and max number of weeks. Always provide your result in JSON format.';
+
+export const MAX_TOKENS: number = 1000;
 
 export const FUNCTIONS = [
   {
