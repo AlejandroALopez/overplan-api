@@ -24,6 +24,9 @@ export class Plan {
   weekProg: number;
 
   @Prop({ required: true })
+  startDate: string;
+
+  @Prop({ required: true })
   weekEndDate: string;
 }
 
