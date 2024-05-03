@@ -1,6 +1,7 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Plan, PlanDocument } from './schemas/plan.schema';
 import { Task, TaskDocument } from '../tasks/schemas/task.schema';
@@ -19,21 +20,20 @@ export class PlanService {
     private taskModel: Model<TaskDocument>,
 
     private readonly httpService: HttpService,
+    private configService: ConfigService,
   ) {}
 
   async createWithGeneratedTasks(plan: Plan): Promise<Plan> {
     const createdPlan = new this.planModel(plan);
+    const URL = this.configService.get('URL') + '/planai/create';
 
     // Call ChatGPT API with some parameters from plan (goal, numWeeks)
     const request: IPlanRequest = { goal: plan.goal, numWeeks: plan.numWeeks };
     const response: AxiosResponse<IPlanResponse> = await lastValueFrom(
-      this.httpService.post<IPlanResponse>(
-        'http://localhost:8080/planai/create',
-        request,
-      ),
+      this.httpService.post<IPlanResponse>(URL, request),
     );
 
-    // Retrieve JSON array of tasks (RES.result.tasks)
+    // Retrieve JSON array of tasks
     const tasks: ITask[] = response.data.result;
 
     // Loop through it, creating tasks (from plan, pass in: planId)
@@ -53,7 +53,6 @@ export class PlanService {
     // Check if all tasks were successfully created
     const allTasksCreated = createdTasks.every((task) => !!task);
 
-    // Tasks were created (saved?), finish by saving plan
     if (allTasksCreated) {
       // All tasks were created successfully, now save the plan
       return createdPlan.save();
