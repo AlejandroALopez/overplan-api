@@ -11,13 +11,14 @@ import {
 import { PlanService } from './plans.service';
 
 import { Plan as PlanModel } from './schemas/plan.schema';
+import { CreatePlanDto } from './dto/create-plan.dto';
 
 @Controller('plans')
 export class PlanController {
   constructor(private readonly planService: PlanService) {}
 
   @Post()
-  create(@Body() plan: PlanModel): Promise<PlanModel> {
+  create(@Body() plan: CreatePlanDto): Promise<PlanModel> {
     return this.planService.createWithGeneratedTasks(plan);
   }
 

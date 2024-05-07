@@ -9,6 +9,7 @@ import { ITask } from '../chatgpt/chatgpt.interfaces';
 import { IPlanRequest, IPlanResponse } from '../chatgpt/chatgpt.interfaces';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
+import { CreatePlanDto } from './dto/create-plan.dto';
 
 @Injectable()
 export class PlanService {
@@ -23,7 +24,7 @@ export class PlanService {
     private configService: ConfigService,
   ) {}
 
-  async createWithGeneratedTasks(plan: Plan): Promise<Plan> {
+  async createWithGeneratedTasks(plan: CreatePlanDto): Promise<Plan> {
     const createdPlan = new this.planModel(plan);
     const URL = this.configService.get('URL') + '/planai/create';
 
@@ -44,7 +45,6 @@ export class PlanService {
           description: taskData.description,
           week: taskData.week,
           planId: createdPlan._id, // Assuming plan._id exists
-          status: 'Backlog',
         });
         return task.save();
       }),

@@ -22,8 +22,12 @@ export class Task {
   @Prop({
     required: true,
     enum: statusValues,
+    default: 'Backlog',
   })
   status: string;
+
+  @Prop({ required: true, default: null })
+  completionDate: string | null;
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);

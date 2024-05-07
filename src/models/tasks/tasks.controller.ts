@@ -10,13 +10,14 @@ import {
 } from '@nestjs/common';
 import { TaskService } from './tasks.service';
 import { Task as TaskModel } from './schemas/task.schema';
+import { CreateTaskDto } from './dto/create-task.dto';
 
 @Controller('tasks')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  create(@Body() task: TaskModel): Promise<TaskModel> {
+  create(@Body() task: CreateTaskDto): Promise<TaskModel> {
     return this.taskService.create(task);
   }
 

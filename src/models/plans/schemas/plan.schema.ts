@@ -18,9 +18,15 @@ export class Plan {
   numWeeks: number;
 
   @Prop({ required: true })
+  active: boolean;
+
+  @Prop({ required: true, default: false })
+  completed: boolean;
+
+  @Prop({ required: true, default: 1 })
   currWeek: number;
 
-  @Prop({ required: true })
+  @Prop({ required: true, default: 0 })
   weekProg: number;
 
   @Prop({ required: true })
