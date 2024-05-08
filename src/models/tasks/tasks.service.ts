@@ -36,4 +36,25 @@ export class TaskService {
   async remove(id: string): Promise<Task> {
     return this.taskModel.findByIdAndDelete(id).exec();
   }
+
+  async moveTasks(planId: string, week: number) {
+    // GET all tasks of plan and week
+    // Iterate over each task
+    // If status !== Completed, week + 1
+    console.log(planId, week);
+  }
 }
+
+//   async moveTasks(planId: string, week: number) {
+//     // GET all tasks of plan and week
+//     const tasks = await this.findByPlanIdAndWeek(planId, week);
+
+//     // Iterate over each task
+//     // If status !== Completed, week + 1
+
+//     tasks.map((task) => {
+//       console.log(task);
+//     });
+
+//     return null;
+//   }

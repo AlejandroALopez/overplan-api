@@ -11,6 +11,7 @@ import {
 import { TaskService } from './tasks.service';
 import { Task as TaskModel } from './schemas/task.schema';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { IMoveTasksBody } from './tasks.interfaces';
 
 @Controller('tasks')
 export class TaskController {
@@ -44,6 +45,12 @@ export class TaskController {
   @Put(':id')
   update(@Param('id') id: string, @Body() task: TaskModel): Promise<TaskModel> {
     return this.taskService.update(id, task);
+  }
+
+  // Move incompleted tasks by one week
+  @Put('move-tasks')
+  moveTasks(@Body() moveTasksBody: IMoveTasksBody) {
+    return this.taskService.moveTasks(moveTasksBody.planId, moveTasksBody.week);
   }
 
   @Delete(':id')
