@@ -18,7 +18,7 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  create(@Body() task: CreateTaskDto): Promise<TaskModel> {
+  async create(@Body() task: CreateTaskDto): Promise<TaskModel> {
     return this.taskService.create(task);
   }
 
@@ -43,18 +43,21 @@ export class TaskController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() task: TaskModel): Promise<TaskModel> {
+  async update(
+    @Param('id') id: string,
+    @Body() task: TaskModel,
+  ): Promise<TaskModel> {
     return this.taskService.update(id, task);
   }
 
   // Move incompleted tasks by one week
-  @Put('move-tasks')
-  moveTasks(@Body() moveTasksBody: IMoveTasksBody) {
+  @Post('move')
+  async moveTasks(@Body() moveTasksBody: IMoveTasksBody) {
     return this.taskService.moveTasks(moveTasksBody.planId, moveTasksBody.week);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<TaskModel> {
+  async remove(@Param('id') id: string): Promise<TaskModel> {
     return this.taskService.remove(id);
   }
 }

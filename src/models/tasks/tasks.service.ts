@@ -37,24 +37,22 @@ export class TaskService {
     return this.taskModel.findByIdAndDelete(id).exec();
   }
 
+  // Increase 'week' value by one of all incomplete tasks with matching planId
   async moveTasks(planId: string, week: number) {
-    // GET all tasks of plan and week
-    // Iterate over each task
-    // If status !== Completed, week + 1
-    console.log(planId, week);
+    try {
+      const tasks = await this.taskModel.find({ planId, week });
+
+      for (const task of tasks) {
+        if (task.status !== 'Completed') {
+          task.week = week + 1;
+          await task.save();
+        }
+      }
+
+      return 'Tasks moved successfully.';
+    } catch (error) {
+      console.error('Error moving tasks:', error);
+      throw new Error('Failed to move tasks.');
+    }
   }
 }
-
-//   async moveTasks(planId: string, week: number) {
-//     // GET all tasks of plan and week
-//     const tasks = await this.findByPlanIdAndWeek(planId, week);
-
-//     // Iterate over each task
-//     // If status !== Completed, week + 1
-
-//     tasks.map((task) => {
-//       console.log(task);
-//     });
-
-//     return null;
-//   }

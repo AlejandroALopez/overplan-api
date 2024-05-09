@@ -26,7 +26,7 @@ export class Task {
   })
   status: string;
 
-  @Prop({ required: true, default: null })
+  @Prop({ default: null })
   completionDate: string | null;
 }
 
