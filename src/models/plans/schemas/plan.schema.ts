@@ -17,7 +17,7 @@ export class Plan {
   @Prop({ required: true })
   numWeeks: number;
 
-  @Prop({ required: true })
+  @Prop({ required: true, default: true })
   active: boolean;
 
   @Prop({ required: true, default: false })
