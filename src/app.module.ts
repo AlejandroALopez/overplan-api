@@ -10,7 +10,7 @@ import { PlanModule } from './models/plans/plans.module';
 import { ChatGPTModule } from './models/chatgpt/chatgpt.module';
 import { AuthModule } from './models/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from './models/auth/auth.guard';
+import { JwtAuthGuard } from './models/auth/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -31,7 +31,7 @@ import { AuthGuard } from './models/auth/auth.guard';
     AppService,
     {
       provide: APP_GUARD,
-      useClass: AuthGuard,
+      useClass: JwtAuthGuard,
     },
   ],
 })
