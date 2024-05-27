@@ -9,6 +9,8 @@ import { TaskModule } from './models/tasks/tasks.module';
 import { PlanModule } from './models/plans/plans.module';
 import { ChatGPTModule } from './models/chatgpt/chatgpt.module';
 import { AuthModule } from './models/auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './models/auth/auth.guard';
 
 @Module({
   imports: [
@@ -25,6 +27,12 @@ import { AuthModule } from './models/auth/auth.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}
