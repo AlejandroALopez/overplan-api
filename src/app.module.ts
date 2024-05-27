@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { TaskModule } from './models/tasks/tasks.module';
 import { PlanModule } from './models/plans/plans.module';
 import { ChatGPTModule } from './models/chatgpt/chatgpt.module';
+import { AuthModule } from './models/auth/auth.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ChatGPTModule } from './models/chatgpt/chatgpt.module';
     TaskModule,
     PlanModule,
     ChatGPTModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
