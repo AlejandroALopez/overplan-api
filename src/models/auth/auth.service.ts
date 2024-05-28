@@ -44,4 +44,22 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+
+  async validateOAuthLogin(user: any) {
+    let userFromDb = await this.usersService.findOneByEmail(user.email);
+
+    if (!userFromDb) {
+      userFromDb = await this.usersService.createSSOUser(
+        user.email,
+        user.firstName,
+        user.lastName,
+        user.provider,
+      );
+    }
+
+    const payload = { username: userFromDb.email, sub: userFromDb._id };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
 }
