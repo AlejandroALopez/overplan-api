@@ -57,9 +57,19 @@ export class AuthService {
       );
     }
 
-    const payload = { username: userFromDb.email, sub: userFromDb._id };
+    const jwt_payload = { username: userFromDb.email, sub: userFromDb._id };
+
+    const userData = {
+      userId: userFromDb._id,
+      email: userFromDb.email,
+      firstName: userFromDb.firstName,
+      lastName: userFromDb.lastName,
+      // Any other user data for redux
+    };
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(jwt_payload),
+      userData,
     };
   }
 }
