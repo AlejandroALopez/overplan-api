@@ -11,9 +11,11 @@ import { ChatGPTModule } from './models/chatgpt/chatgpt.module';
 import { AuthModule } from './models/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './models/auth/jwt-auth.guard';
+import { SubscriptionModule } from './models/subscription/subscription.module';
 
 @Module({
   imports: [
+    SubscriptionModule.forRootAsync(),
     ConfigModule.forRoot({ isGlobal: true }),
     EventEmitterModule.forRoot(),
     MongooseModule.forRootAsync({
