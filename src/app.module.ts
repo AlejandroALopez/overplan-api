@@ -12,6 +12,7 @@ import { AuthModule } from './models/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './models/auth/jwt-auth.guard';
 import { SubscriptionModule } from './models/subscription/subscription.module';
+import { MedalsModule } from './models/medals/medals.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { SubscriptionModule } from './models/subscription/subscription.module';
         uri: process.env.MONGO_URL,
       }),
     }),
+    MedalsModule,
     TaskModule,
     PlanModule,
     ChatGPTModule,
