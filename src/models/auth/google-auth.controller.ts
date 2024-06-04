@@ -18,12 +18,12 @@ export class GoogleAuthController {
   @Get('callback')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req, @Res() res) {
-    const { access_token, userData } = req.user;
+    const { refresh_token, access_token, userData } = req.user;
     const redirectUrl = new URL('http://localhost:3000');
 
     redirectUrl.searchParams.append('token', access_token);
+    redirectUrl.searchParams.append('refreshToken', refresh_token);
     redirectUrl.searchParams.append('userData', JSON.stringify(userData));
     res.redirect(redirectUrl.toString());
-    // res.redirect(`http://localhost:3000?token=${access_token}`);
   }
 }
