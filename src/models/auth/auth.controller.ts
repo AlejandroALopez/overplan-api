@@ -79,4 +79,9 @@ export class AuthController {
     // You can return a JWT or another token if needed
     return { userId: userDto._id, email: userDto.email };
   }
+
+  @Post('refresh-token')
+  async refreshToken(@Body('refresh_token') refreshToken: string) {
+    return this.authService.refreshAccessToken(refreshToken);
+  }
 }

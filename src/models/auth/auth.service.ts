@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -45,6 +45,7 @@ export class AuthService {
     };
   }
 
+  // Create or login user, returns object with user data and jwt tokens
   async validateOAuthLogin(user: any) {
     let userFromDb = await this.usersService.findOneByEmail(user.email);
 
@@ -57,7 +58,9 @@ export class AuthService {
       );
     }
 
-    const jwt_payload = { username: userFromDb.email, sub: userFromDb._id };
+    const jwtPayload = { username: userFromDb.email, sub: userFromDb._id };
+    const accessToken = this.jwtService.sign(jwtPayload, { expiresIn: '15m' });
+    const refreshToken = this.jwtService.sign(jwtPayload, { expiresIn: '7d' });
 
     const userData = {
       userId: userFromDb._id,
@@ -68,8 +71,23 @@ export class AuthService {
     };
 
     return {
-      access_token: this.jwtService.sign(jwt_payload),
+      access_token: accessToken,
+      refresh_token: refreshToken,
       userData,
     };
+  }
+
+  // Returns: New access token from refresh token
+  async refreshAccessToken(refreshToken: string) {
+    try {
+      const decoded = this.jwtService.verify(refreshToken);
+      const jwtPayload = { username: decoded.username, sub: decoded.sub };
+      const newAccessToken = this.jwtService.sign(jwtPayload, {
+        expiresIn: '15m',
+      });
+      return { access_token: newAccessToken };
+    } catch (e) {
+      throw new UnauthorizedException();
+    }
   }
 }
