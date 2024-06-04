@@ -80,6 +80,7 @@ export class AuthController {
     return { userId: userDto._id, email: userDto.email };
   }
 
+  @SkipAuth()
   @Post('refresh-token')
   async refreshToken(@Body('refresh_token') refreshToken: string) {
     return this.authService.refreshAccessToken(refreshToken);
