@@ -24,6 +24,7 @@ export class PlanService {
     private configService: ConfigService,
   ) {}
 
+  // TODO: Pass token to Post call
   async createWithGeneratedTasks(plan: CreatePlanDto): Promise<Plan> {
     const createdPlan = new this.planModel(plan);
     const URL = this.configService.get('URL') + '/planai/create';
