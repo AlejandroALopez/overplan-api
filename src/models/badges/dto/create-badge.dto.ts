@@ -1,4 +1,4 @@
-export class CreateMedalDto {
+export class CreateBadgeDto {
   goal: string;
   userId: string;
   imageKey: string;

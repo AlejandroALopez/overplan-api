@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-export type MedalDocument = HydratedDocument<Medal>;
+export type BadgeDocument = HydratedDocument<Badge>;
 
 @Schema()
-export class Medal {
+export class Badge {
   @Prop({ required: true })
   goal: string;
 
@@ -21,4 +21,4 @@ export class Medal {
   planId: string;
 }
 
-export const MedalSchema = SchemaFactory.createForClass(Medal);
+export const BadgeSchema = SchemaFactory.createForClass(Badge);
