@@ -9,16 +9,19 @@ export class Badge {
   goal: string;
 
   @Prop({ required: true })
+  weeks: number;
+
+  @Prop({ required: true })
   userId: string;
+
+  @Prop({ required: true })
+  planId: string;
 
   @Prop({ required: true })
   imageKey: string;
 
   @Prop({ required: true })
   completionDate: string;
-
-  @Prop({ required: true })
-  planId: string;
 }
 
 export const BadgeSchema = SchemaFactory.createForClass(Badge);
