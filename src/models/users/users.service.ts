@@ -24,6 +24,9 @@ export class UsersService {
       password: hashedPassword,
       firstName,
       lastName,
+      activePlanId: null,
+      tier: 'Free',
+      tokens: 1,
     });
     return user.save();
   }
@@ -40,6 +43,9 @@ export class UsersService {
       lastName,
       provider,
       password: null, // SSO users might not have a password
+      activePlanId: null,
+      tier: 'Free',
+      tokens: 1,
     });
     return user.save();
   }

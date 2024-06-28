@@ -19,7 +19,7 @@ export class GoogleAuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req, @Res() res) {
     const { refresh_token, access_token, userData } = req.user;
-    const redirectUrl = new URL('http://localhost:3000');
+    const redirectUrl = new URL('http://localhost:3000'); // Client URL
 
     redirectUrl.searchParams.append('token', access_token);
     redirectUrl.searchParams.append('refreshToken', refresh_token);

@@ -18,7 +18,16 @@ export class User extends Document {
   lastName: string;
 
   @Prop()
-  provider: string; // e.g., 'google', 'github', etc.
+  provider?: string; // e.g., 'google', 'github', etc.
+
+  @Prop()
+  activePlanId: string | null;
+
+  @Prop()
+  tier: string; // 'Free', 'Pro'
+
+  @Prop()
+  tokens: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

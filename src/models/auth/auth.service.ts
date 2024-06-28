@@ -77,7 +77,9 @@ export class AuthService {
       email: userFromDb.email,
       firstName: userFromDb.firstName,
       lastName: userFromDb.lastName,
-      // Any other user data for redux
+      activePlanId: userFromDb.activePlanId,
+      tier: userFromDb.tier,
+      tokens: userFromDb.tokens,
     };
 
     return {
