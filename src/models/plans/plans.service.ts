@@ -25,14 +25,18 @@ export class PlanService {
   ) {}
 
   // TODO: Pass token to Post call
-  async createWithGeneratedTasks(plan: CreatePlanDto): Promise<Plan> {
+  async createWithGeneratedTasks(plan: CreatePlanDto, authToken: string): Promise<Plan> {
     const createdPlan = new this.planModel(plan);
     const URL = this.configService.get('URL') + '/planai/create';
 
     // Call ChatGPT API with some parameters from plan (goal, numWeeks)
     const request: IPlanRequest = { goal: plan.goal, numWeeks: plan.numWeeks };
     const response: AxiosResponse<IPlanResponse> = await lastValueFrom(
-      this.httpService.post<IPlanResponse>(URL, request),
+      this.httpService.post<IPlanResponse>(URL, request, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      }),
     );
 
     // Retrieve JSON array of tasks
