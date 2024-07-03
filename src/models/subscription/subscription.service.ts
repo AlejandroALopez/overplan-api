@@ -34,7 +34,7 @@ export class SubscriptionService {
     });
   }
 
-  async createCheckoutSession(priceId: string) {
+  async createCheckoutSession(userId: string, email: string, priceId: string) {
     return await this.stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -44,6 +44,8 @@ export class SubscriptionService {
         },
       ],
       mode: 'subscription',
+      customer_email: email,
+      client_reference_id: userId,
       success_url:
         'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'http://localhost:3000/dashboard/subscriptions',

@@ -12,6 +12,15 @@ export class UsersService {
     return this.userModel.findOne({ email }).exec();
   }
 
+  async updateUserSubscription(
+    userId: string,
+    updateData: Partial<User>,
+  ): Promise<User> {
+    return this.userModel
+      .findByIdAndUpdate(userId, updateData, { new: true })
+      .exec();
+  }
+
   async createUser(
     email: string,
     password: string,

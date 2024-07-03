@@ -26,11 +26,11 @@ export class SubscriptionController {
 
   @Post('checkout-session')
   async createCheckoutSession(
-    @Body() createCheckoutSessionDto: { priceId: string },
+    @Body() createCheckoutSessionDto: { userId: string, email: string, priceId: string },
   ) {
-    const { priceId } = createCheckoutSessionDto;
+    const { userId, email, priceId } = createCheckoutSessionDto;
     const session =
-      await this.subscriptionService.createCheckoutSession(priceId);
+      await this.subscriptionService.createCheckoutSession(userId, email, priceId);
     return { sessionId: session.id };
   }
 }
