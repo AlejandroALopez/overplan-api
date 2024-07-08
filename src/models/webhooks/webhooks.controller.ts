@@ -2,6 +2,7 @@ import { Controller, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { UsersService } from '../users/users.service';
 import Stripe from 'stripe';
+import { SkipAuth } from '../auth/constants';
 
 @Controller('webhooks')
 export class WebhookController {
@@ -14,7 +15,8 @@ export class WebhookController {
     });
   }
 
-  @Post('stripe')
+  @SkipAuth()
+  @Post()
   async handleStripeWebhook(@Req() req: Request, @Res() res: Response) {
     const sig = req.headers['stripe-signature'];
     let event;
@@ -45,9 +47,13 @@ export class WebhookController {
   }
 
   private async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
-    // Find user by session.client_reference_id
-    const userEmail = session.client_reference_id;
-    const user = await this.userService.findOneByEmail(userEmail);
+    console.log('-------------------------------------------------');
+    console.log('Session Object:');
+    console.log(session);
+    console.log('-------------------------------------------------');
+
+    const userId = session.client_reference_id;
+    const user = await this.userService.findOneById(userId);
     
     if (user) {
       // Update user's subscription status or benefits

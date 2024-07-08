@@ -12,6 +12,10 @@ export class UsersService {
     return this.userModel.findOne({ email }).exec();
   }
 
+  async findOneById(id: string): Promise<User | undefined> {
+    return this.userModel.findOne({ id }).exec();
+  }
+
   async updateUserSubscription(
     userId: string,
     updateData: Partial<User>,

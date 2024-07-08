@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { WebhookModule } from './models/webhooks/webhooks.module';
 
 import { TaskModule } from './models/tasks/tasks.module';
 import { PlanModule } from './models/plans/plans.module';
@@ -29,6 +30,7 @@ import { BadgesModule } from './models/badges/badges.module';
     PlanModule,
     ChatGPTModule,
     AuthModule,
+    WebhookModule,
   ],
   controllers: [AppController],
   providers: [

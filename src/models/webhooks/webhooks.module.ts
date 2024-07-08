@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { WebhookController } from './webhooks.controller';
-import { UsersService } from '../users/users.service';
+import { UsersModule } from '../users/users.module';
 // import { TypeOrmModule } from '@nestjs/typeorm';
 // import { User } from '../users/user.entity';
 
 @Module({
   //   imports: [TypeOrmModule.forFeature([User])],
-  imports: [],
+  imports: [UsersModule],
   controllers: [WebhookController],
-  providers: [UsersService],
+  // providers: [UsersService],
 })
 export class WebhookModule {}

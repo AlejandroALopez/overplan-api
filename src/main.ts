@@ -6,7 +6,7 @@ import * as bodyParser from 'body-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.use('/webhooks/stripe', bodyParser.raw({ type: 'application/json' }));
+  app.use('/webhooks', bodyParser.raw({ type: 'application/json' }));
 
   const corsOptions: CorsOptions = {
     origin: 'http://localhost:3000', // for local testing
