@@ -5,6 +5,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { WebhookModule } from './models/webhooks/webhooks.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 import { TaskModule } from './models/tasks/tasks.module';
 import { PlanModule } from './models/plans/plans.module';
@@ -31,6 +32,15 @@ import { BadgesModule } from './models/badges/badges.module';
     ChatGPTModule,
     AuthModule,
     WebhookModule,
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.EMAIL_HOST,
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [

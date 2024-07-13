@@ -24,6 +24,7 @@ export class GoogleAuthController {
     redirectUrl.searchParams.append('token', access_token);
     redirectUrl.searchParams.append('refreshToken', refresh_token);
     redirectUrl.searchParams.append('userData', JSON.stringify(userData));
+    
     res.redirect(redirectUrl.toString());
   }
 }
