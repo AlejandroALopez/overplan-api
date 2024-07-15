@@ -9,8 +9,8 @@ export class WebhookController {
   private stripe: Stripe;
   private TOKENS_FOR_PRO: number = 10;
 
-  constructor(private readonly userService: UsersService) {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  constructor(private userService: UsersService) {
+    this.stripe = new Stripe(process.env.STRIPE_API_KEY, {
       apiVersion: '2024-04-10',
     });
   }
@@ -25,7 +25,7 @@ export class WebhookController {
       event = this.stripe.webhooks.constructEvent(
         req.body,
         sig,
-        process.env.STRIPE_WEBHOOK_SECRET
+        process.env.STRIPE_WEBHOOK_SECRET,
       );
     } catch (err) {
       console.log(`⚠️  Webhook signature verification failed.`, err.message);
@@ -46,21 +46,36 @@ export class WebhookController {
     res.json({ received: true });
   }
 
-  private async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
-    console.log('-------------------------------------------------');
-    console.log('Session Object:');
-    console.log(session);
-    console.log('-------------------------------------------------');
+  @SkipAuth()
+  private async handleCheckoutSessionCompleted(
+    session: Stripe.Checkout.Session,
+  ) {
+    const user = await this.userService.findOneById(
+      session.client_reference_id,
+    );
 
-    const userId = session.client_reference_id;
-    const user = await this.userService.findOneById(userId);
-    
     if (user) {
       // Update user's subscription status or benefits
-      await this.userService.updateUserSubscription(user.id, {
-        tokens: (user.tokens || 0) + this.TOKENS_FOR_PRO,
-        tier: 'Pro',
-      });
+      const lineItems = await this.stripe.checkout.sessions.listLineItems(
+        session.id,
+      );
+      const productId = lineItems.data[0].price.id;
+
+      let subscriptionType: string;
+      switch (productId) {
+        case process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID:
+          subscriptionType = 'Pro';
+          break;
+        default:
+          break;
+      }
+
+      if (subscriptionType) {
+        await this.userService.updateUserSubscription(
+          user.id,
+          subscriptionType,
+        );
+      }
     }
   }
 }

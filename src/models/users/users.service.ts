@@ -13,7 +13,7 @@ export class UsersService {
   }
 
   async findOneById(id: string): Promise<User | undefined> {
-    return this.userModel.findOne({ id }).exec();
+    return this.userModel.findById(id).exec();
   }
 
   async update(id: string, user: Partial<User>): Promise<User> {
@@ -22,11 +22,33 @@ export class UsersService {
 
   async updateUserSubscription(
     userId: string,
-    updateData: Partial<User>,
+    subscriptionType: string,
   ): Promise<User> {
-    return this.userModel
-      .findByIdAndUpdate(userId, updateData, { new: true })
-      .exec();
+    let tokens: number;
+
+    switch (subscriptionType) {
+      case 'Pro':
+        tokens = 10; // New sub, assign tokens
+        break;
+      default:
+        break; // keep tokens when switching back to Free tier
+    }
+
+    if (tokens) {
+      // any paid tier, update tier and tokens
+      return this.userModel
+        .findByIdAndUpdate(
+          userId,
+          { tier: subscriptionType, tokens: tokens },
+          { new: true },
+        )
+        .exec();
+    } else {
+      // free tier, only update tier
+      return this.userModel
+        .findByIdAndUpdate(userId, { tier: subscriptionType }, { new: true })
+        .exec();
+    }
   }
 
   async createUser(
