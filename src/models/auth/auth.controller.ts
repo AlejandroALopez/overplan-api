@@ -115,6 +115,6 @@ export class AuthController {
   @SkipAuth()
   @Post('reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<void> {
-    await this.authService.resetPassword(resetPasswordDto.token, resetPasswordDto.password);
+    await this.authService.resetPassword(resetPasswordDto.token, resetPasswordDto.pass);
   }
 }

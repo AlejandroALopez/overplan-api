@@ -4,5 +4,5 @@ export class ForgotPasswordDto {
 
 export class ResetPasswordDto {
   token: string;
-  password: string;
+  pass: string;
 }
