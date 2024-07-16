@@ -100,13 +100,19 @@ export class AuthController {
     return this.authService.refreshAccessToken(refreshToken);
   }
 
+  @SkipAuth()
   @Post('forgot-password')
   async forgotPassword(
     @Body() forgotPasswordDto: ForgotPasswordDto,
   ): Promise<void> {
-    await this.authService.sendPasswordResetLink(forgotPasswordDto.email);
+      try{
+        await this.authService.sendPasswordResetLink(forgotPasswordDto.email);
+      } catch(error) {
+        throw new BadRequestException(error.message);
+      }
   }
 
+  @SkipAuth()
   @Post('reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<void> {
     await this.authService.resetPassword(resetPasswordDto.token, resetPasswordDto.password);

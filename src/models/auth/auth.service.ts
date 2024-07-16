@@ -131,7 +131,7 @@ export class AuthService {
   async sendPasswordResetLink(email: string): Promise<void> {
     const user = await this.usersService.findOneByEmail(email);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error('Account not found');
     }
 
     const resetToken = this.jwtService.sign(
@@ -152,7 +152,7 @@ export class AuthService {
       const { userId } = this.jwtService.verify(token);
       const user = await this.usersService.findOneById(userId);
       if (!user) {
-        throw new Error('User not found');
+        throw new Error('Account not found');
       }
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
