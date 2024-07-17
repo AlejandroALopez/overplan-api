@@ -46,6 +46,8 @@ export class AuthService {
       activePlanId: user.activePlanId,
       tier: user.tier,
       tokens: user.tokens,
+      subscriptionId: user.subscriptionId,
+      renewalDate: user.renewalDate
     };
 
     return { access_token, refresh_token, userData };
