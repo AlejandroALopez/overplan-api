@@ -47,7 +47,7 @@ export class SubscriptionService {
       customer_email: email,
       client_reference_id: userId,
       success_url:
-        'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}',
+        'http://localhost:3000/dashboard/subscriptions/success?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'http://localhost:3000/dashboard/subscriptions',
     });
   }

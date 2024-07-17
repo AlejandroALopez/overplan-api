@@ -60,6 +60,10 @@ export class WebhookController {
         session.id,
       );
       const productId = lineItems.data[0].price.id;
+      const subscriptionId = session.subscription as string;
+      const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
+
+      const renewalDate = subscription.current_period_end; // timestamp
 
       let subscriptionType: string;
       switch (productId) {
@@ -74,6 +78,8 @@ export class WebhookController {
         await this.userService.updateUserSubscription(
           user.id,
           subscriptionType,
+          subscriptionId,
+          renewalDate
         );
       }
     }

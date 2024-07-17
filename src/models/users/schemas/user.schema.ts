@@ -28,6 +28,12 @@ export class User extends Document {
 
   @Prop()
   tokens: number;
+
+  @Prop()
+  subscriptionId: string | null;
+
+  @Prop()
+  renewalDate: number | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -23,6 +23,8 @@ export class UsersService {
   async updateUserSubscription(
     userId: string,
     subscriptionType: string,
+    subscriptionId: string,
+    renewalDate: number,
   ): Promise<User> {
     let tokens: number;
 
@@ -39,7 +41,7 @@ export class UsersService {
       return this.userModel
         .findByIdAndUpdate(
           userId,
-          { tier: subscriptionType, tokens: tokens },
+          { tier: subscriptionType, tokens, subscriptionId, renewalDate},
           { new: true },
         )
         .exec();
