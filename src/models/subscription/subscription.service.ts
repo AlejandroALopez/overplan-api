@@ -51,4 +51,10 @@ export class SubscriptionService {
       cancel_url: 'http://localhost:3000/dashboard/subscriptions',
     });
   }
+
+  async cancelSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
+    return await this.stripe.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: true,
+    });
+  }
 }

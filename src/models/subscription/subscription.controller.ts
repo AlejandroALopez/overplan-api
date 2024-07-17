@@ -33,4 +33,9 @@ export class SubscriptionController {
       await this.subscriptionService.createCheckoutSession(userId, email, priceId);
     return { sessionId: session.id };
   }
+
+  @Post('cancel-subscription')
+  async cancelSubscription(@Body('subscriptionId') subscriptionId: string) {
+    return await this.subscriptionService.cancelSubscription(subscriptionId);
+  }
 }
