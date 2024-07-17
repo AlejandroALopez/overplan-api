@@ -107,6 +107,8 @@ export class AuthService {
       activePlanId: userFromDb.activePlanId,
       tier: userFromDb.tier,
       tokens: userFromDb.tokens,
+      subscriptionId: userFromDb.subscriptionId,
+      renewalDate: userFromDb.renewalDate
     };
 
     return {
