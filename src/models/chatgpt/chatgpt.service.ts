@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IPlanRequest, IPlanResponse } from './chatgpt.interfaces';
 import OpenAI from 'openai';
-import { generatePrompt, FUNCTIONS, MAX_TOKENS } from './chatgpt.constants';
+import { generatePrompt, TOOLS, MAX_TOKENS } from './chatgpt.constants';
 
 @Injectable()
 export class ChatGPTService {
@@ -16,7 +16,7 @@ export class ChatGPTService {
 
   // Get array of tasks from ChatGPT based on goal and weeks
   async getPlanData(request: IPlanRequest): Promise<OpenAI.ChatCompletion> {
-    const userPrompt = `Goal: ${request.goal}\nMax weeks: ${request.numWeeks}`;
+    const userPrompt = `Goal: ${request.goal}\nWeeks: ${request.numWeeks}`;
     const systemPrompt = generatePrompt(request.numWeeks);
 
     return this.chatgptService.chat.completions.create({
@@ -26,19 +26,24 @@ export class ChatGPTService {
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
       ],
-      functions: FUNCTIONS,
-      function_call: 'auto',
+      tools: TOOLS as OpenAI.Chat.Completions.ChatCompletionTool[],
+      tool_choice: 'required',
       max_tokens: MAX_TOKENS,
     });
   }
 
   getAIPlanResponse(message: OpenAI.ChatCompletion): IPlanResponse {
-    const resultJSON =
-      message?.choices?.length &&
-      JSON.parse(message.choices[0].message.function_call.arguments);
+    let allTasks = [];
+
+    // Build array with all tasks from GPT tool calls (each contains the tasks for one week)
+    for (const call of message.choices[0].message.tool_calls) {
+      const callJSON = JSON.parse(call.function.arguments);
+      allTasks = [...allTasks, ...callJSON.tasks];
+    }
+
     return {
       success: true,
-      result: resultJSON.tasks,
+      result: allTasks,
     };
   }
 }
