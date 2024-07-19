@@ -10,6 +10,7 @@ import { IPlanRequest, IPlanResponse } from '../chatgpt/chatgpt.interfaces';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
 import { CreatePlanDto } from './dto/create-plan.dto';
+import { User, UserDocument } from '../users/schemas/user.schema';
 
 @Injectable()
 export class PlanService {
@@ -20,12 +21,21 @@ export class PlanService {
     @InjectModel(Task.name)
     private taskModel: Model<TaskDocument>,
 
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
+
     private readonly httpService: HttpService,
     private configService: ConfigService,
   ) {}
 
   // TODO: Pass token to Post call
   async createWithGeneratedTasks(plan: CreatePlanDto, authToken: string): Promise<Plan> {
+    // If user is out of tokens, throw error
+    const user = await this.userModel.findById(plan.userId);
+    if(!user || user.tokens < 1) {
+      throw new Error('Not enough tokens to create a plan');
+    }
+
     const createdPlan = new this.planModel(plan);
     const URL = this.configService.get('URL') + '/planai/create';
 
@@ -59,7 +69,7 @@ export class PlanService {
     const allTasksCreated = createdTasks.every((task) => !!task);
 
     if (allTasksCreated) {
-      // All tasks were created successfully, now save the plan
+      // All tasks were created successfully, save the plan
       return createdPlan.save();
     } else {
       // Rollback: Delete created tasks if any creation fails
