@@ -28,11 +28,15 @@ export class PlanService {
     private configService: ConfigService,
   ) {}
 
-  // TODO: Pass token to Post call
-  async createWithGeneratedTasks(plan: CreatePlanDto, authToken: string): Promise<Plan> {
+  async createWithGeneratedTasks(
+    plan: CreatePlanDto,
+    authToken: string,
+  ): Promise<Plan> {
     // If user is out of tokens, throw error
-    const user = await this.userModel.findById(plan.userId);
-    if(!user || user.tokens < 1) {
+    const user = await this.userModel.findById(plan.userId).exec();
+    if (!user) {
+      throw new Error('User not found');
+    } else if (user.tokens < 1) {
       throw new Error('Not enough tokens to create a plan');
     }
 
@@ -69,7 +73,14 @@ export class PlanService {
     const allTasksCreated = createdTasks.every((task) => !!task);
 
     if (allTasksCreated) {
-      // All tasks were created successfully, save the plan
+      // All tasks were created successfully, spend user token and save plan
+      await this.userModel
+        .findByIdAndUpdate(
+          plan.userId,
+          { tokens: user.tokens - 1 },
+          { new: true },
+        )
+        .exec();
       return createdPlan.save();
     } else {
       // Rollback: Delete created tasks if any creation fails
