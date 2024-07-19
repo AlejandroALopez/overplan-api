@@ -2,6 +2,7 @@ import {
   Controller,
   Param,
   Query,
+  Req,
   Get,
   Body,
   Post,
@@ -18,8 +19,9 @@ export class PlanController {
   constructor(private readonly planService: PlanService) {}
 
   @Post()
-  create(@Body() plan: CreatePlanDto): Promise<PlanModel> {
-    return this.planService.createWithGeneratedTasks(plan);
+  create(@Body() plan: CreatePlanDto, @Req() req: any): Promise<PlanModel> {
+    const authToken = req.headers.authorization.split(' ')[1];
+    return this.planService.createWithGeneratedTasks(plan, authToken);
   }
 
   // GET /plans - Retrieve all plans filtered by userId

@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { WebhookModule } from './models/webhooks/webhooks.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 import { TaskModule } from './models/tasks/tasks.module';
 import { PlanModule } from './models/plans/plans.module';
@@ -12,7 +14,7 @@ import { AuthModule } from './models/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './models/auth/jwt-auth.guard';
 import { SubscriptionModule } from './models/subscription/subscription.module';
-import { MedalsModule } from './models/medals/medals.module';
+import { BadgesModule } from './models/badges/badges.module';
 
 @Module({
   imports: [
@@ -24,11 +26,21 @@ import { MedalsModule } from './models/medals/medals.module';
         uri: process.env.MONGO_URL,
       }),
     }),
-    MedalsModule,
+    BadgesModule,
     TaskModule,
     PlanModule,
     ChatGPTModule,
     AuthModule,
+    WebhookModule,
+    MailerModule.forRoot({
+      transport: {
+        service: 'hotmail', // change later to accommodate service email
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [

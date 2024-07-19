@@ -10,6 +10,7 @@ import { IPlanRequest, IPlanResponse } from '../chatgpt/chatgpt.interfaces';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
 import { CreatePlanDto } from './dto/create-plan.dto';
+import { User, UserDocument } from '../users/schemas/user.schema';
 
 @Injectable()
 export class PlanService {
@@ -20,19 +21,36 @@ export class PlanService {
     @InjectModel(Task.name)
     private taskModel: Model<TaskDocument>,
 
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
+
     private readonly httpService: HttpService,
     private configService: ConfigService,
   ) {}
 
-  // TODO: Pass token to Post call
-  async createWithGeneratedTasks(plan: CreatePlanDto): Promise<Plan> {
+  async createWithGeneratedTasks(
+    plan: CreatePlanDto,
+    authToken: string,
+  ): Promise<Plan> {
+    // If user is out of tokens, throw error
+    const user = await this.userModel.findById(plan.userId).exec();
+    if (!user) {
+      throw new Error('User not found');
+    } else if (user.tokens < 1) {
+      throw new Error('Not enough tokens to create a plan');
+    }
+
     const createdPlan = new this.planModel(plan);
     const URL = this.configService.get('URL') + '/planai/create';
 
     // Call ChatGPT API with some parameters from plan (goal, numWeeks)
     const request: IPlanRequest = { goal: plan.goal, numWeeks: plan.numWeeks };
     const response: AxiosResponse<IPlanResponse> = await lastValueFrom(
-      this.httpService.post<IPlanResponse>(URL, request),
+      this.httpService.post<IPlanResponse>(URL, request, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      }),
     );
 
     // Retrieve JSON array of tasks
@@ -55,7 +73,14 @@ export class PlanService {
     const allTasksCreated = createdTasks.every((task) => !!task);
 
     if (allTasksCreated) {
-      // All tasks were created successfully, now save the plan
+      // All tasks were created successfully, spend user token and save plan
+      await this.userModel
+        .findByIdAndUpdate(
+          plan.userId,
+          { tokens: user.tokens - 1 },
+          { new: true },
+        )
+        .exec();
       return createdPlan.save();
     } else {
       // Rollback: Delete created tasks if any creation fails

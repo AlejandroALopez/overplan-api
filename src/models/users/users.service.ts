@@ -12,6 +12,47 @@ export class UsersService {
     return this.userModel.findOne({ email }).exec();
   }
 
+  async findOneById(id: string): Promise<User | undefined> {
+    return this.userModel.findById(id).exec();
+  }
+
+  async update(id: string, user: Partial<User>): Promise<User> {
+    return this.userModel.findByIdAndUpdate(id, user, { new: true }).exec();
+  }
+
+  async updateUserSubscription(
+    userId: string,
+    subscriptionType: string,
+    subscriptionId: string,
+    renewalDate: number,
+  ): Promise<User> {
+    let tokens: number;
+
+    switch (subscriptionType) {
+      case 'Pro':
+        tokens = 10; // New sub, assign tokens
+        break;
+      default:
+        break; // keep tokens when switching back to Free tier
+    }
+
+    if (tokens) {
+      // any paid tier, update tier and tokens
+      return this.userModel
+        .findByIdAndUpdate(
+          userId,
+          { tier: subscriptionType, tokens, subscriptionId, renewalDate},
+          { new: true },
+        )
+        .exec();
+    } else {
+      // free tier, only update tier
+      return this.userModel
+        .findByIdAndUpdate(userId, { tier: subscriptionType }, { new: true })
+        .exec();
+    }
+  }
+
   async createUser(
     email: string,
     password: string,
@@ -24,6 +65,9 @@ export class UsersService {
       password: hashedPassword,
       firstName,
       lastName,
+      activePlanId: null,
+      tier: 'Free',
+      tokens: 1,
     });
     return user.save();
   }
@@ -40,6 +84,9 @@ export class UsersService {
       lastName,
       provider,
       password: null, // SSO users might not have a password
+      activePlanId: null,
+      tier: 'Free',
+      tokens: 1,
     });
     return user.save();
   }

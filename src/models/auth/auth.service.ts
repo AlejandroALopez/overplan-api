@@ -1,6 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { MailerService } from '@nestjs-modules/mailer';
+import { User } from '../users/schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -8,6 +10,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -20,16 +23,34 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
+  async login(email: string, password: string) {
+    const user = await this.usersService.findOneByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException('Incorrect email or password');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Incorrect email or password');
+    }
+
     const payload = { username: user.email, sub: user._id };
+    const access_token = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-
-    return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
+    const userData = {
+      userId: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      activePlanId: user.activePlanId,
+      tier: user.tier,
+      tokens: user.tokens,
+      subscriptionId: user.subscriptionId,
+      renewalDate: user.renewalDate
     };
+
+    return { access_token, refresh_token, userData };
   }
 
   async register(
@@ -45,14 +66,20 @@ export class AuthService {
       lastName,
     );
     const payload = { username: user.email, sub: user._id };
+    const access_token = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-
-    return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
+    const userData = {
+      userId: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      activePlanId: user.activePlanId,
+      tier: user.tier,
+      tokens: user.tokens,
     };
+
+    return { access_token, refresh_token, userData };
   }
 
   // Create or login user, returns object with user data and jwt tokens
@@ -77,7 +104,11 @@ export class AuthService {
       email: userFromDb.email,
       firstName: userFromDb.firstName,
       lastName: userFromDb.lastName,
-      // Any other user data for redux
+      activePlanId: userFromDb.activePlanId,
+      tier: userFromDb.tier,
+      tokens: userFromDb.tokens,
+      subscriptionId: userFromDb.subscriptionId,
+      renewalDate: userFromDb.renewalDate
     };
 
     return {
@@ -98,6 +129,41 @@ export class AuthService {
       return { access_token: newAccessToken };
     } catch (e) {
       throw new UnauthorizedException();
+    }
+  }
+
+  async sendPasswordResetLink(email: string): Promise<void> {
+    const user = await this.usersService.findOneByEmail(email);
+    if (!user) {
+      throw new Error('Account not found');
+    }
+
+    const resetToken = this.jwtService.sign(
+      { userId: user._id },
+      { expiresIn: '1h' },
+    );
+    const resetLink = `http://localhost:3000/auth/resetPassword?token=${resetToken}`;
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Password Reset',
+      text: `Click the following link to reset your password: ${resetLink}`,
+    });
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    try {
+      const { userId } = this.jwtService.verify(token);
+      const user = await this.usersService.findOneById(userId);
+      if (!user) {
+        throw new Error('Account not found');
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      await this.usersService.update(user._id, { password: hashedPassword });
+    } catch (error) {
+      throw new Error('Invalid or expired token');
     }
   }
 }
