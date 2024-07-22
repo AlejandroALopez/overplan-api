@@ -61,14 +61,18 @@ export class WebhookController {
       );
       const productId = lineItems.data[0].price.id;
       const subscriptionId = session.subscription as string;
-      const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
+      const subscription =
+        await this.stripe.subscriptions.retrieve(subscriptionId);
 
       const renewalDate = subscription.current_period_end; // timestamp
 
       let subscriptionType: string;
       switch (productId) {
-        case process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID:
-          subscriptionType = 'Pro';
+        case process.env.NEXT_PUBLIC_STRIPE_PRO_MONTH_PRICE_ID:
+          subscriptionType = 'Pro (month)';
+          break;
+        case process.env.NEXT_PUBLIC_STRIPE_PRO_YEAR_PRICE_ID:
+          subscriptionType = 'Pro (year)';
           break;
         default:
           break;
@@ -79,7 +83,7 @@ export class WebhookController {
           user.id,
           subscriptionType,
           subscriptionId,
-          renewalDate
+          renewalDate,
         );
       }
     }

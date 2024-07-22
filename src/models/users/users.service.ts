@@ -29,8 +29,9 @@ export class UsersService {
     let tokens: number;
 
     switch (subscriptionType) {
-      case 'Pro':
-        tokens = 10; // New sub, assign tokens
+      case 'Pro (month)':
+      case 'Pro (year)':
+        tokens = 10; // New Pro sub, assign tokens
         break;
       default:
         break; // keep tokens when switching back to Free tier
@@ -41,7 +42,7 @@ export class UsersService {
       return this.userModel
         .findByIdAndUpdate(
           userId,
-          { tier: subscriptionType, tokens, subscriptionId, renewalDate},
+          { tier: subscriptionType, tokens, subscriptionId, renewalDate },
           { new: true },
         )
         .exec();
