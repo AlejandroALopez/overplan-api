@@ -47,7 +47,8 @@ export class AuthService {
       tier: user.tier,
       tokens: user.tokens,
       subscriptionId: user.subscriptionId,
-      renewalDate: user.renewalDate
+      renewalDate: user.renewalDate,
+      subActive: user.subActive,
     };
 
     return { access_token, refresh_token, userData };
@@ -108,7 +109,8 @@ export class AuthService {
       tier: userFromDb.tier,
       tokens: userFromDb.tokens,
       subscriptionId: userFromDb.subscriptionId,
-      renewalDate: userFromDb.renewalDate
+      renewalDate: userFromDb.renewalDate,
+      subActive: userFromDb.subActive,
     };
 
     return {

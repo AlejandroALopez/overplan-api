@@ -12,6 +12,11 @@ export class UsersService {
     return this.userModel.findOne({ email }).exec();
   }
 
+  // For webhooks without user IDs 
+  async findOneBySubscriptionId(subscriptionId: string): Promise<User | undefined> {
+    return this.userModel.findOne({ subscriptionId }).exec();
+  }
+
   async findOneById(id: string): Promise<User | undefined> {
     return this.userModel.findById(id).exec();
   }
@@ -27,13 +32,16 @@ export class UsersService {
     renewalDate: number,
   ): Promise<User> {
     let tokens: number;
+    let subActive: boolean;
 
     switch (subscriptionType) {
       case 'Pro (month)':
       case 'Pro (year)':
         tokens = 10; // New Pro sub, assign tokens
+        subActive = true;
         break;
       default:
+        subActive = false;
         break; // keep tokens when switching back to Free tier
     }
 
@@ -42,16 +50,32 @@ export class UsersService {
       return this.userModel
         .findByIdAndUpdate(
           userId,
-          { tier: subscriptionType, tokens, subscriptionId, renewalDate },
+          {
+            tier: subscriptionType,
+            tokens,
+            subscriptionId,
+            renewalDate,
+            subActive,
+          },
           { new: true },
         )
         .exec();
     } else {
       // free tier, only update tier
       return this.userModel
-        .findByIdAndUpdate(userId, { tier: subscriptionType }, { new: true })
+        .findByIdAndUpdate(
+          userId,
+          { tier: subscriptionType, subActive },
+          { new: true },
+        )
         .exec();
     }
+  }
+
+  async cancelUserSubscription(userId: string) {
+    return this.userModel
+      .findByIdAndUpdate(userId, { subActive: false }, { new: true })
+      .exec();
   }
 
   async createUser(

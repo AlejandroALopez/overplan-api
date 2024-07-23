@@ -38,14 +38,20 @@ export class WebhookController {
         const session = event.data.object as Stripe.Checkout.Session;
         await this.handleCheckoutSessionCompleted(session);
         break;
+      case 'customer.subscription.updated':
+        const obj = event.data.object as Stripe.Event.Data.Object;
+        await this.handleSubscriptionUpdate(obj);
+        break;
       // Add more cases as needed
       default:
         console.log(`Unhandled event type ${event.type}`);
+        break;
     }
 
     res.json({ received: true });
   }
 
+  // Triggered when user upgrades their account
   @SkipAuth()
   private async handleCheckoutSessionCompleted(
     session: Stripe.Checkout.Session,
@@ -86,6 +92,16 @@ export class WebhookController {
           renewalDate,
         );
       }
+    }
+  }
+
+  // Triggered when user cancels their subscription or re-activates it
+  @SkipAuth()
+  private async handleSubscriptionUpdate(obj: Stripe.Event.Data.Object) {
+    const user = await this.userService.findOneBySubscriptionId(obj['id']);
+
+    if (user && obj['cancel_at_period_end']) {
+      await this.userService.cancelUserSubscription(user.id);
     }
   }
 }
