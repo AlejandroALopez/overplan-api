@@ -144,7 +144,7 @@ export class AuthService {
       { userId: user._id },
       { expiresIn: '1h' },
     );
-    const resetLink = `http://localhost:3000/auth/resetPassword?token=${resetToken}`;
+    const resetLink = `${process.env.CLIENT_URL}/auth/resetPassword?token=${resetToken}`;
 
     await this.mailerService.sendMail({
       to: email,

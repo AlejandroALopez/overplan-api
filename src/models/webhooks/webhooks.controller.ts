@@ -7,7 +7,6 @@ import { SkipAuth } from '../auth/constants';
 @Controller('webhooks')
 export class WebhookController {
   private stripe: Stripe;
-  private TOKENS_FOR_PRO: number = 10;
 
   constructor(private userService: UsersService) {
     this.stripe = new Stripe(process.env.STRIPE_API_KEY, {

@@ -33,7 +33,7 @@ export class AuthController {
       const { access_token, refresh_token, userData } =
         await this.authService.login(email, password);
 
-      const redirectUrl = new URL('http://localhost:3000'); // Client URL
+      const redirectUrl = new URL(process.env.CLIENT_URL);
       redirectUrl.searchParams.append('token', access_token);
       redirectUrl.searchParams.append('refreshToken', refresh_token);
       redirectUrl.searchParams.append('userData', JSON.stringify(userData));
@@ -65,7 +65,7 @@ export class AuthController {
       const { access_token, refresh_token, userData } =
         await this.authService.register(email, password, firstName, lastName);
       
-      const redirectUrl = new URL('http://localhost:3000'); // Client URL
+      const redirectUrl = new URL(process.env.CLIENT_URL);
       redirectUrl.searchParams.append('token', access_token);
       redirectUrl.searchParams.append('refreshToken', refresh_token);
       redirectUrl.searchParams.append('userData', JSON.stringify(userData));
