@@ -9,7 +9,6 @@ async function bootstrap() {
   app.use('/webhooks', bodyParser.raw({ type: 'application/json' }));
 
   const corsOptions: CorsOptions = {
-    // origin: 'http://localhost:3000', // for local testing
     origin: process.env.CLIENT_URL,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
