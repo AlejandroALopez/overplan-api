@@ -39,8 +39,16 @@ export class WebhookController {
         await this.handleCheckoutSessionCompleted(session);
         break;
       case 'customer.subscription.updated':
-        const obj = event.data.object as Stripe.Event.Data.Object;
-        await this.handleSubscriptionUpdate(obj);
+        const subscription = event.data.object as Stripe.Subscription;
+        await this.handleSubscriptionUpdate(subscription);
+        break;
+      case 'customer.subscription.deleted':
+        const sub = event.data.object as Stripe.Subscription;
+        await this.handleSubscriptionDeleted(sub);
+        break;
+      case 'invoice.payment_succeeded':
+        const invoice = event.data.object as Stripe.Invoice;
+        await this.handleInvoicePaymentSucceeded(invoice);
         break;
       // Add more cases as needed
       default:
@@ -51,7 +59,7 @@ export class WebhookController {
     res.json({ received: true });
   }
 
-  // Triggered when user upgrades their account
+  // Triggered when user buys a subscription
   @SkipAuth()
   private async handleCheckoutSessionCompleted(
     session: Stripe.Checkout.Session,
@@ -95,13 +103,62 @@ export class WebhookController {
     }
   }
 
-  // Triggered when user cancels their subscription or re-activates it
+  // Triggered when a subscription gets renewed
   @SkipAuth()
-  private async handleSubscriptionUpdate(obj: Stripe.Event.Data.Object) {
-    const user = await this.userService.findOneBySubscriptionId(obj['id']);
+  private async handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
+    const subscriptionId = invoice.subscription as string;
+    const subscription =
+      await this.stripe.subscriptions.retrieve(subscriptionId);
 
-    if (user && obj['cancel_at_period_end']) {
-      await this.userService.cancelUserSubscription(user.id);
+    const customer = (await this.stripe.customers.retrieve(
+      subscription.customer as string,
+    )) as Stripe.Customer;
+    const userEmail = customer.email;
+    const user = await this.userService.findOneByEmail(userEmail);
+
+    if (user) {
+      const renewalDate = subscription.current_period_end; // new renewal date
+      await this.userService.updateUserSubscription(
+        user.id,
+        user.tier,
+        user.subscriptionId,
+        renewalDate,
+      );
+    }
+  }
+
+  // Triggered when user cancels their subscription (or re-activates it)
+  @SkipAuth()
+  private async handleSubscriptionUpdate(subscription: Stripe.Subscription) {
+    const customer = (await this.stripe.customers.retrieve(
+      subscription.customer as string,
+    )) as Stripe.Customer;
+    const userEmail = customer.email;
+    const user = await this.userService.findOneByEmail(userEmail);
+
+    if (user) {
+      await this.userService.update(user.id, {
+        subActive: !subscription.cancel_at_period_end,
+      });
+    }
+  }
+
+  // Triggers when a user subscription ends (no renewal)
+  @SkipAuth()
+  private async handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+    const customer = (await this.stripe.customers.retrieve(
+      subscription.customer as string,
+    )) as Stripe.Customer;
+    const userEmail = customer.email;
+    const user = await this.userService.findOneByEmail(userEmail);
+
+    if (user) {
+      await this.userService.update(user.id, {
+        tier: 'Free',
+        subscriptionId: null,
+        renewalDate: null,
+        subActive: false,
+      });
     }
   }
 }

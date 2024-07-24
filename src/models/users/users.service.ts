@@ -25,6 +25,7 @@ export class UsersService {
     return this.userModel.findByIdAndUpdate(id, user, { new: true }).exec();
   }
 
+  // Give right benefits depending on subscription type
   async updateUserSubscription(
     userId: string,
     subscriptionType: string,
@@ -70,12 +71,6 @@ export class UsersService {
         )
         .exec();
     }
-  }
-
-  async cancelUserSubscription(userId: string) {
-    return this.userModel
-      .findByIdAndUpdate(userId, { subActive: false }, { new: true })
-      .exec();
   }
 
   async createUser(

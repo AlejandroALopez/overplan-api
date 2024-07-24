@@ -36,7 +36,7 @@ export class User extends Document {
   renewalDate: number | null; // If canceled, it represents the expiration date
 
   @Prop({ default: false })
-  subActive: boolean;
+  subActive: boolean; // False = canceled, no sub
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
