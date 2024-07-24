@@ -34,7 +34,9 @@ import { BadgesModule } from './models/badges/badges.module';
     WebhookModule,
     MailerModule.forRoot({
       transport: {
-        service: 'hotmail', // change later to accommodate service email
+        host: process.env.EMAIL_HOST,
+        port: 587,
+        secure: false,
         auth: {
           user: process.env.EMAIL_USERNAME,
           pass: process.env.EMAIL_PASSWORD,
