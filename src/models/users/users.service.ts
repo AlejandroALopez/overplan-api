@@ -37,8 +37,11 @@ export class UsersService {
 
     switch (subscriptionType) {
       case 'Pro (month)':
+        tokens = 10;
+        subActive = true;
+        break;
       case 'Pro (year)':
-        tokens = 10; // New Pro sub, assign tokens
+        tokens = 120;
         subActive = true;
         break;
       default:
