@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User, UserDocument } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { FREE_TIER_TOKENS, PRO_TIER_MONTH_TOKENS, PRO_TIER_YEAR_TOKENS } from './users.constants';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -37,11 +38,11 @@ export class UsersService {
 
     switch (subscriptionType) {
       case 'Pro (month)':
-        tokens = 10;
+        tokens = PRO_TIER_MONTH_TOKENS;
         subActive = true;
         break;
       case 'Pro (year)':
-        tokens = 120;
+        tokens = PRO_TIER_YEAR_TOKENS;
         subActive = true;
         break;
       default:
@@ -90,7 +91,7 @@ export class UsersService {
       lastName,
       activePlanId: null,
       tier: 'Free',
-      tokens: 1,
+      tokens: FREE_TIER_TOKENS,
     });
     return user.save();
   }
@@ -109,7 +110,7 @@ export class UsersService {
       password: null, // SSO users might not have a password
       activePlanId: null,
       tier: 'Free',
-      tokens: 1,
+      tokens: FREE_TIER_TOKENS,
     });
     return user.save();
   }
