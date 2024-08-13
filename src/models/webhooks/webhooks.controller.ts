@@ -84,9 +84,6 @@ export class WebhookController {
         case process.env.NEXT_PUBLIC_STRIPE_PRO_MONTH_PRICE_ID:
           subscriptionType = 'Pro (month)';
           break;
-        case process.env.NEXT_PUBLIC_STRIPE_PRO_YEAR_PRICE_ID:
-          subscriptionType = 'Pro (year)';
-          break;
         default:
           break;
       }

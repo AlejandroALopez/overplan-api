@@ -24,7 +24,7 @@ export class User extends Document {
   activePlanId: string | null;
 
   @Prop()
-  tier: string; // 'Free', 'Pro (month)', 'Pro year)'
+  tier: string; // 'Free', 'Pro (month)'
 
   @Prop()
   tokens: number;
